@@ -4,6 +4,7 @@ import SignUp from "./pages/Auth/SignUp";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import TopNav from "./components/TopNav";
+import ProfileSetup from "./pages/ProfileSetup";
 
 export default function App() {
   return (
@@ -11,7 +12,7 @@ export default function App() {
       {/* Public */}
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-
+      <Route path="/profile-setup" element={<ProfileSetup />} />
       {/* Protected */}
       <Route
         path="/"
