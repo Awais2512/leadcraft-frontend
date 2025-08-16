@@ -4,7 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global tweaks */
 html, body, #root {
   height: 100%;
 }

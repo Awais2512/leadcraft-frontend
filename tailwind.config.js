@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#14a800", // Upwork-ish green
+          DEFAULT: "#14a800", // Upwork green
           dark: "#0E7A00",
           light: "#E9F6E8",
         },
@@ -17,13 +17,10 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       boxShadow: {
         soft: "0 10px 25px -10px rgba(0,0,0,0.15)",
-      },
-      borderRadius: {
-        xl2: "1rem",
       },
     },
   },

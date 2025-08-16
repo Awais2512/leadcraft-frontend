@@ -1,6 +1,40 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabase";
+import AuthLayout from "./AuthLayout";
+import TextInput from "../../components/TextInput";
+
+function MailIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+      <path
+        d="M3 5h14v10H3V5Zm14 0-7 5L3 5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+function LockIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+      <path
+        d="M6 9V7a4 4 0 1 1 8 0v2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <rect
+        x="4"
+        y="9"
+        width="12"
+        height="8"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
 
 export default function SignIn() {
   const nav = useNavigate();
@@ -23,42 +57,46 @@ export default function SignIn() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center px-4">
-      <div className="card w-full max-w-md">
-        <h1 className="mb-6 text-2xl font-bold">Welcome back</h1>
-        <form className="space-y-4" onSubmit={onSubmit}>
-          <div>
-            <label className="label">Email</label>
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="label">Password</label>
-            <input
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {err && <p className="text-sm text-red-600">{err}</p>}
-          <button className="btn btn-primary w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign in"}
-          </button>
-        </form>
-        <p className="mt-4 text-center text-sm text-ink-700">
-          No account?{" "}
-          <Link className="text-brand underline" to="/signup">
-            Sign up
-          </Link>
-        </p>
-      </div>
-    </div>
+    <AuthLayout subtitle="Welcome back! Sign in to your LeadCraft account.">
+      <h1 className="mb-1 text-2xl font-bold">Sign in</h1>
+      <p className="mb-6 text-sm text-ink-700">
+        Enter your credentials to continue.
+      </p>
+
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <TextInput
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.currentTarget.value)}
+          placeholder="you@example.com"
+          leftIcon={<MailIcon />}
+          autoComplete="email"
+          required
+        />
+        <TextInput
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.currentTarget.value)}
+          placeholder="••••••••"
+          leftIcon={<LockIcon />}
+          autoComplete="current-password"
+          required
+        />
+        {err && <p className="text-sm text-red-600">{err}</p>}
+
+        <button className="btn btn-primary w-full" disabled={loading}>
+          {loading ? "Signing in..." : "Sign in"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-ink-700">
+        New here?{" "}
+        <Link className="text-brand underline" to="/signup">
+          Create an account
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }
