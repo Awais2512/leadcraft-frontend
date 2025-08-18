@@ -37,33 +37,93 @@ function LockIcon() {
   );
 }
 
+// simple scoring
+function getStrength(password: string) {
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  // if (password.length >= 12) score++;
+  return score; // 0–5
+}
+
 export default function SignUp() {
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
   const [confirmPassword, setConfirmPassword] = useState("");
+=======
+  const [confirm, setConfirm] = useState("");
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
   const [err, setErr] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
+
+  const strength = getStrength(password);
+  const percent = (strength / 4) * 100;
+  const strengthText =
+    strength <= 2 ? "Weak" : strength <= 3 ? "Medium" : "Strong";
+  const barColor =
+    strength <= 2
+      ? "bg-red-500"
+      : strength <= 3
+      ? "bg-yellow-500"
+      : "bg-green-500";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
 
+<<<<<<< HEAD
     if (password !== confirmPassword) {
+=======
+    if (password !== confirm) {
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
       setErr("Passwords do not match.");
       return;
     }
 
+<<<<<<< HEAD
     const { error } = await supabase.auth.signUp({
+=======
+    const { data, error } = await supabase.auth.signUp({
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
       email,
       password,
-      options: { emailRedirectTo: window.location.origin + "/signin" },
+      options: { emailRedirectTo: window.location.origin + "/profile-setup" },
     });
 
+<<<<<<< HEAD
     if (error) return setErr(error.message);
     setOk(true);
 
     setTimeout(() => nav("/signin"), 2500);
+=======
+    // --- Handle "already exists" case
+    if (error) {
+      if (error.message.includes("User already registered")) {
+        setErr("Email already registered. Please sign in.");
+      } else {
+        setErr(error.message);
+      }
+      return;
+    }
+
+    // Supabase might return a user even if already confirmed
+    if (
+      data?.user &&
+      data.user.confirmation_sent_at &&
+      data.user.identities?.length === 0
+    ) {
+      // Already exists & confirmed
+      setErr("Email already registered. Please sign in.");
+      return;
+    }
+
+    setOk(true);
+    setTimeout(() => nav("/signin"), 2000);
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
   }
 
   return (
@@ -93,16 +153,45 @@ export default function SignUp() {
           required
         />
         <TextInput
+<<<<<<< HEAD
           label="Confirm Password"
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+=======
+          label="Confirm password"
+          type="password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.currentTarget.value)}
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
           placeholder="Re-enter password"
           leftIcon={<LockIcon />}
           autoComplete="new-password"
           required
         />
 
+<<<<<<< HEAD
+=======
+        {password && (
+          <div>
+            <div className="h-2 w-full rounded bg-gray-200">
+              <div
+                className={`h-2 rounded ${barColor}`}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <p
+              className={`mt-1 text-xs font-medium ${barColor.replace(
+                "bg-",
+                "text-"
+              )}`}
+            >
+              Password strength: {strengthText}
+            </p>
+          </div>
+        )}
+
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
         {err && <p className="text-sm text-red-600">{err}</p>}
         {ok && (
           <p className="text-sm text-green-600">

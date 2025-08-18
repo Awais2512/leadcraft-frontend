@@ -4,6 +4,7 @@ import SignUp from "./pages/Auth/SignUp";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import TopNav from "./components/TopNav";
+<<<<<<< HEAD
 import Profile from "./pages/Profile/Profile";
 import Footer from "./components/Footer";
 
@@ -17,6 +18,9 @@ function Layout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+=======
+import ProfileSetup from "./pages/ProfileSetup";
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
 
 export default function App() {
   return (
@@ -24,8 +28,13 @@ export default function App() {
       {/* Public Routes */}
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
+<<<<<<< HEAD
 
       {/* Protected - Dashboard */}
+=======
+      <Route path="/profile-setup" element={<ProfileSetup />} />
+      {/* Protected */}
+>>>>>>> 0ab4a23120577f9297545beb0b1056c30eba11f8
       <Route
         path="/"
         element={
