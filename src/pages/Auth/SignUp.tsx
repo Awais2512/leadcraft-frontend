@@ -15,6 +15,7 @@ function MailIcon() {
     </svg>
   );
 }
+
 function LockIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -40,20 +41,29 @@ export default function SignUp() {
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
+
+    if (password !== confirmPassword) {
+      setErr("Passwords do not match.");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: window.location.origin + "/signin" },
     });
+
     if (error) return setErr(error.message);
     setOk(true);
-    setTimeout(() => nav("/signin"), 1500);
+
+    setTimeout(() => nav("/signin"), 2500);
   }
 
   return (
@@ -82,6 +92,17 @@ export default function SignUp() {
           autoComplete="new-password"
           required
         />
+        <TextInput
+          label="Confirm Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+          placeholder="Re-enter password"
+          leftIcon={<LockIcon />}
+          autoComplete="new-password"
+          required
+        />
+
         {err && <p className="text-sm text-red-600">{err}</p>}
         {ok && (
           <p className="text-sm text-green-600">

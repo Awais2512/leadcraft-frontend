@@ -1,136 +1,111 @@
 import { useEffect, useState } from "react";
+import Sidebar from "../../components/Sidebar";
 import { api } from "../../lib/api";
 
 type Profile = {
-  id?: string;
-  bio?: string | null;
-  services?: string | null;
-  skills?: string[] | null;
-  hourly_rate?: number | null;
-  tone_default?: string | null;
-  availability?: string | null;
+  first_name?: string;
+  last_name?: string;
+  profile_picture?: string | null;
+  bio?: string;
+  services?: string;
+  skills?: string[];
+  hourly_rate?: number;
+  tone_default?: string;
+  availability?: string;
 };
 
 export default function Profile() {
   const [profile, setProfile] = useState<Profile>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      try {
-        const data = await api<Profile>("/profile");
-        setProfile({
-          ...data,
-          skills: (data.skills as any) ?? [],
-        });
-      } catch (e: any) {
-        setErr(e.message);
-      } finally {
-        setLoading(false);
-      }
+      const data = await api<Profile>("/profile");
+      setProfile({ ...data, skills: data.skills ?? [] });
+      setLoading(false);
     })();
   }, []);
 
   async function save() {
-    try {
-      setSaving(true);
-      await api("/profile", {
-        method: "POST",
-        body: JSON.stringify(profile),
-      });
-    } catch (e: any) {
-      alert(e.message);
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    await api("/profile", { method: "POST", body: JSON.stringify(profile) });
+    setSaving(false);
+  }
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () =>
+      setProfile({ ...profile, profile_picture: reader.result as string });
+    reader.readAsDataURL(file);
   }
 
   if (loading) return <div>Loading...</div>;
-  if (err) return <div className="text-red-600">{err}</div>;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Profile</h1>
-      <div className="card space-y-4">
-        <div>
-          <label className="label">Bio</label>
-          <textarea
-            className="input h-28"
-            value={profile.bio || ""}
-            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="label">Services (description)</label>
-          <textarea
-            className="input h-28"
-            value={profile.services || ""}
-            onChange={(e) =>
-              setProfile({ ...profile, services: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <label className="label">Skills (comma-separated)</label>
-          <input
-            className="input"
-            value={(profile.skills || []).join(", ")}
-            onChange={(e) =>
-              setProfile({
-                ...profile,
-                skills: e.target.value
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean),
-              })
-            }
-          />
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="label">Hourly Rate (USD)</label>
+    <div className="flex flex-col md:flex-row gap-6">
+      <Sidebar
+        firstName={profile.first_name}
+        lastName={profile.last_name}
+        profilePic={profile.profile_picture || null}
+      />
+
+      <div className="flex-1 space-y-6">
+        <h1 className="text-3xl font-bold">My Profile</h1>
+
+        <div className="bg-white p-6 shadow-md rounded-xl space-y-6">
+          {/* Profile Picture */}
+          <div className="flex items-center gap-4">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+              {profile.profile_picture ? (
+                <img
+                  src={profile.profile_picture}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                  No Image
+                </div>
+              )}
+            </div>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
+          </div>
+
+          {/* Name + Bio */}
+          <div className="grid md:grid-cols-2 gap-4">
             <input
-              className="input"
-              type="number"
-              min={0}
-              step="1"
-              value={profile.hourly_rate ?? ""}
+              className="border p-2 rounded"
+              placeholder="First Name"
+              value={profile.first_name || ""}
               onChange={(e) =>
-                setProfile({ ...profile, hourly_rate: Number(e.target.value) })
+                setProfile({ ...profile, first_name: e.target.value })
+              }
+            />
+            <input
+              className="border p-2 rounded"
+              placeholder="Last Name"
+              value={profile.last_name || ""}
+              onChange={(e) =>
+                setProfile({ ...profile, last_name: e.target.value })
               }
             />
           </div>
-          <div>
-            <label className="label">Default Tone</label>
-            <select
-              className="input"
-              value={profile.tone_default || "friendly"}
-              onChange={(e) =>
-                setProfile({ ...profile, tone_default: e.target.value })
-              }
-            >
-              <option value="friendly">Friendly</option>
-              <option value="professional">Professional</option>
-              <option value="confident">Confident</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label className="label">Availability</label>
-          <input
-            className="input"
-            value={profile.availability || ""}
-            onChange={(e) =>
-              setProfile({ ...profile, availability: e.target.value })
-            }
-            placeholder="e.g., 20 hrs/week, GMT+5"
-          />
-        </div>
 
-        <div className="flex items-center gap-2">
-          <button className="btn btn-primary" onClick={save} disabled={saving}>
+          <textarea
+            className="w-full border rounded p-2"
+            placeholder="Bio"
+            value={profile.bio || ""}
+            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+          />
+
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            onClick={save}
+            disabled={saving}
+          >
             {saving ? "Saving..." : "Save Profile"}
           </button>
         </div>
