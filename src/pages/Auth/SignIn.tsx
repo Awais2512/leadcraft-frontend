@@ -15,6 +15,7 @@ function MailIcon() {
     </svg>
   );
 }
+
 function LockIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
@@ -42,6 +43,7 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -54,6 +56,23 @@ export default function SignIn() {
     setLoading(false);
     if (error) return setErr(error.message);
     nav("/");
+  }
+
+  async function onForgotPassword() {
+    if (!email) {
+      setErr("Please enter your email first.");
+      return;
+    }
+    setErr(null);
+    setMessage(null);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "http://localhost:5173/reset-password", // yahan apni site ka URL dalna
+    });
+    if (error) {
+      setErr(error.message);
+    } else {
+      setMessage("Password reset link sent to your email.");
+    }
   }
 
   return (
@@ -85,11 +104,22 @@ export default function SignIn() {
           required
         />
         {err && <p className="text-sm text-red-600">{err}</p>}
+        {message && <p className="text-sm text-green-600">{message}</p>}
 
         <button className="btn btn-primary w-full" disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
+
+      <div className="mt-4 text-center">
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="text-sm text-brand underline"
+        >
+          Forgot password?
+        </button>
+      </div>
 
       <p className="mt-6 text-center text-sm text-ink-700">
         New here?{" "}
